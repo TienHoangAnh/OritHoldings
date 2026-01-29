@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getJobs } from '../api/jobs';
 import useDebounce from '../hooks/useDebounce';
@@ -20,6 +20,25 @@ const Jobs = () => {
   const debouncedSearch = useDebounce(searchInput, 500);
   const debouncedLocation = useDebounce(locationInput, 500);
 
+  const fetchJobs = useCallback(
+    async (filters) => {
+      // Chỉ set searching = true nếu không phải lần đầu load
+      if (!initialLoading) {
+        setSearching(true);
+      }
+      try {
+        const response = await getJobs(filters);
+        setJobs(response.data);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      } finally {
+        setInitialLoading(false);
+        setSearching(false);
+      }
+    },
+    [initialLoading]
+  );
+
   // Fetch jobs khi debounced values hoặc type thay đổi
   useEffect(() => {
     fetchJobs({
@@ -28,23 +47,7 @@ const Jobs = () => {
       type: type,
       includeApplicationStatus: user && user.role === 'applicant',
     });
-  }, [debouncedSearch, debouncedLocation, type, user]);
-
-  const fetchJobs = async (filters) => {
-    // Chỉ set searching = true nếu không phải lần đầu load
-    if (!initialLoading) {
-      setSearching(true);
-    }
-    try {
-      const response = await getJobs(filters);
-      setJobs(response.data);
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-    } finally {
-      setInitialLoading(false);
-      setSearching(false);
-    }
-  };
+  }, [debouncedSearch, debouncedLocation, type, user, fetchJobs]);
 
   const getAppliedLabel = (status) => {
     if (!status) return null;

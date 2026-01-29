@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile, updateProfile } from '../api/users';
 import { AuthContext } from '../context/AuthContext';
@@ -18,11 +18,7 @@ const EditProfile = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchCurrentProfile();
-  }, []);
-
-  const fetchCurrentProfile = async () => {
+  const fetchCurrentProfile = useCallback(async () => {
     try {
       const response = await getUserProfile(user.id);
       const profile = response.data.profile || {};
@@ -38,7 +34,11 @@ const EditProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.id]);
+
+  useEffect(() => {
+    fetchCurrentProfile();
+  }, [fetchCurrentProfile]);
 
   const handleChange = (e) => {
     setFormData({

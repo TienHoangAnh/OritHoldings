@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getJobApplications, updateApplicationStatus } from '../api/applications';
 import { getJob } from '../api/jobs';
@@ -11,11 +11,7 @@ const JobApplicants = () => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
 
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [applicationsRes, jobRes] = await Promise.all([
         getJobApplications(id),
@@ -28,7 +24,11 @@ const JobApplicants = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const getStatusLabel = (status) => {
     if (status === 'accepted') return 'Accepted';

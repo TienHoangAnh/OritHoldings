@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { getJob } from '../api/jobs';
 import { createApplication } from '../api/applications';
 import { AuthContext } from '../context/AuthContext';
@@ -7,7 +7,6 @@ import './JobDetail.css';
 
 const JobDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,11 +16,7 @@ const JobDetail = () => {
   const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchJob();
-  }, [id]);
-
-  const fetchJob = async () => {
+  const fetchJob = useCallback(async () => {
     try {
       const response = await getJob(id);
       setJob(response.data);
@@ -30,7 +25,11 @@ const JobDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchJob();
+  }, [fetchJob]);
 
   const handleApply = async (e) => {
     e.preventDefault();

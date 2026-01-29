@@ -14,6 +14,7 @@ const app = express();
 // CORS configuration - Allow both local development and production frontend
 const allowedOrigins = [
   'http://localhost:3000',
+  "https://orit-holdings.vercel.app", // domain vercel của bạn
   process.env.FRONTEND_URL, // Production frontend URL from env (e.g., https://your-app.vercel.app)
 ].filter(Boolean); // Remove undefined values
 

@@ -22,7 +22,6 @@ NODE_ENV=development
 
 **Lưu ý:** 
 - Nếu bạn dùng MongoDB Atlas, thay `MONGODB_URI` bằng connection string từ Atlas
-- Format: `mongodb+srv://username:password@cluster.mongodb.net/tinejobs?retryWrites=true&w=majority`
 
 4. **Chạy server:**
 ```bash

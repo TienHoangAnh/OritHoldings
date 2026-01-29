@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyApplications } from '../api/applications';
 import { AuthContext } from '../context/AuthContext';
@@ -10,11 +10,7 @@ const Applications = () => {
   const [statusFilter, setStatusFilter] = useState('all'); // all | pending | accepted | rejected
   const { refreshUnseenCount } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchApplications();
-  }, []);
-
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     try {
       const response = await getMyApplications();
       // Prefer unread first, then newest first
@@ -34,7 +30,11 @@ const Applications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [refreshUnseenCount]);
+
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
 
   const getStatusLabel = (status) => {
     if (status === 'accepted') return 'ACCEPTED';

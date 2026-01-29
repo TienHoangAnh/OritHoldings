@@ -58,22 +58,6 @@ export const NotificationProvider = ({ children }) => {
           ? 'error'
           : 'info';
 
-  const showNext = () => {
-    setActive((current) => {
-      if (current) return current;
-      // pop from queue
-      let next = null;
-      setQueue((q) => {
-        if (q.length > 0) {
-          next = q[0];
-          return q.slice(1);
-        }
-        return q;
-      });
-      return next;
-    });
-  };
-
   // Whenever queue changes and nothing active, show next
   useEffect(() => {
     if (!active && queue.length > 0) {
